@@ -1,0 +1,23 @@
+/**:
+  ros__parameters:
+    camera_name: "camera_rr"
+    frame_id: "CAMERA_RR"
+    pixel_format: rgb8
+    serial_no: 233100071
+#    camera_info_url: "file:///home/gem/ROS2_WS/e4_ws/src/hardware_drivers/3rd_drivers/lucid_vision_driver/config/test.yaml"
+    camera_info_url: "package://lucid_vision_driver/config/camera_rr.yaml"
+    fps: 15
+    horizontal_binning: 1 # resize horizontal resolution/horizontal_binning
+    vertical_binning: 1   # resize horizontal resolution/vertical_binning
+    enable_rectifying: false
+    enable_compressing: false
+    use_default_device_settings: false
+    # if you use_default_device_settings: true, the following settings are ignored.
+    # ROS driver will use the default device settings of the camera.
+    exposure_auto: true
+    exposure_target: 187
+    gain_auto: true
+    gain_target: 1
+    gamma_target: 1.0
+    image_horizontal_flip: false
+    image_vertical_flip: false

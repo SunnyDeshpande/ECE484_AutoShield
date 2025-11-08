@@ -1,0 +1,27 @@
+pacmod2_game_control:
+  ros__parameters:
+    pacmod_vehicle_type: "POLARIS_GEM"
+    controller_type: "LOGITECH_F310"
+    steering_max_speed: 3.3
+    accel_scale_val: 1.0
+    brake_scale_val: 1.0
+    max_veh_speed: 11.176 
+
+
+launch_driver: true
+use_socketcan: true
+pacmod_can_hardware_id: 43029
+pacmod_can_circuit_id: 0
+pacmod_socketcan_device: "can0"
+# PACMod Vehicle Type (POLARIS_GEM or others)
+# Controller Types
+# Steering and speed configuration
+# Scaling factors for acceleration and brake sensitivity
+
+
+# Game Control Parameters
+joy:
+  ros__parameters:
+    coalesce_interval: 0.02
+    default_trig_val: true
+    deadzone: 0.0

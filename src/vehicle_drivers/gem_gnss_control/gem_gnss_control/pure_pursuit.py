@@ -328,6 +328,9 @@ class PurePursuit(Node):
 
             target_x = self.path_points_x[self.goal]
             target_y = self.path_points_y[self.goal]
+
+            self.logger().info(f"Goal index: {self.goal}, Target Position: ({target_x}, {target_y}), current Position: ({curr_x}, {curr_y}), Look-ahead distance: {ld}")
+
             target_yaw = self.path_points_heading[self.goal]
             alpha = math.atan2(target_y - curr_y, target_x - curr_x) - curr_yaw
             curvature = 0.0 if self.speed < 0.2 else 2.0 * math.sin(alpha) / ld

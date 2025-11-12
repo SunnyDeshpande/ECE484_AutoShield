@@ -23,6 +23,8 @@ from std_msgs.msg import Bool
 from pacmod2_msgs.msg import PositionWithSpeed, VehicleSpeedRpt, GlobalCmd, SystemCmdFloat, SystemCmdInt
 from sensor_msgs.msg import NavSatFix
 from septentrio_gnss_driver.msg import INSNavGeod
+from visualization_msgs.msg import Marker
+from geometry_msgs.msg import Point
 
 # Initialize pygame for joystick
 pygame.init()
@@ -235,7 +237,7 @@ class PurePursuit(Node):
 
     def publish_visualization_markers(self, target_x, target_y):
         waypoints_marker = Marker()
-        waypoints_marker.header.frame_id = "map"
+        waypoints_marker.header.frame_id = "base_link"
         waypoints_marker.header.stamp = self.get_clock().now().to_msg()
         waypoints_marker.ns = "waypoints"
         waypoints_marker.id = 0
@@ -257,7 +259,7 @@ class PurePursuit(Node):
         self.waypoints_pub.publish(waypoints_marker)
 
         next_waypoint_marker = Marker()
-        next_waypoint_marker.header.frame_id = "map"
+        next_waypoint_marker.header.frame_id = "base_link"
         next_waypoint_marker.header.stamp = self.get_clock().now().to_msg()
         next_waypoint_marker.ns = "next_waypoint"
         next_waypoint_marker.id = 1
@@ -329,7 +331,7 @@ class PurePursuit(Node):
             target_x = self.path_points_x[self.goal]
             target_y = self.path_points_y[self.goal]
 
-            self.logger().info(f"Goal index: {self.goal}, Target Position: ({target_x}, {target_y}), current Position: ({curr_x}, {curr_y}), Look-ahead distance: {ld}")
+            self.get_logger().info(f"Goal index: {self.goal}, Target Position: ({target_x}, {target_y}), current Position: ({curr_x}, {curr_y}), Look-ahead distance: {ld}")
 
             target_yaw = self.path_points_heading[self.goal]
             alpha = math.atan2(target_y - curr_y, target_x - curr_x) - curr_yaw

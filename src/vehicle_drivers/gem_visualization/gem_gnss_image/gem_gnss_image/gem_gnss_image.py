@@ -116,22 +116,11 @@ class GNSSImage(Node):
             lat_y = int(self.img_height - self.img_height * (wp.y - self.lat_start_bt) / self.lat_scale)
             cv2.circle(pub_image, (lon_x, lat_y), 3, (255, 255, 255), -1)
 
-        # draw current position
-        lon_x = int(self.img_width * (self.lon - self.lon_start_l) / self.lon_scale)
-        lat_y = int(self.img_height - self.img_height * (self.lat - self.lat_start_bt) / self.lat_scale)
-        cv2.circle(pub_image, (lon_x, lat_y), 8, (0, 0, 255), -1)
-
         # draw next waypoint
         if self.next_waypoint:
             lon_x = int(self.img_width * (self.next_waypoint.x - self.lon_start_l) / self.lon_scale)
             lat_y = int(self.img_height - self.img_height * (self.next_waypoint.y - self.lat_start_bt) / self.lat_scale)
             cv2.circle(pub_image, (lon_x, lat_y), 8, (0, 255, 0), -1)
-
-        # draw base point
-        base_lon_x = int(self.img_width * (self.lon_start_l - self.lon_start_l) / self.lon_scale)
-        base_lat_y = int(self.img_height - self.img_height * (self.lat_start_bt - self.lat_start_bt) / self.lat_scale)
-        cv2.circle(pub_image, (base_lon_x, base_lat_y), 10, (255, 0, 0), -1)
-        cv2.putText(pub_image, "Base Point", (base_lon_x + 10, base_lat_y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1)
 
         try:
             # Convert OpenCV image to ROS image and publish

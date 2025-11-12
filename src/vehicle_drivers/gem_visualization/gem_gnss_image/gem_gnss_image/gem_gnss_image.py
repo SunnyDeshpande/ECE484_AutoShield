@@ -18,6 +18,7 @@ from std_msgs.msg import String, Float64
 from sensor_msgs.msg import Imu, NavSatFix, Image, CameraInfo           
 from sensor_msgs.msg import NavSatFix
 from septentrio_gnss_driver.msg import INSNavGeod
+from visualization_msgs.msg import Marker
 
 image_path = os.path.join(get_package_share_directory('gem_gnss_image'), 'images', 'gnss_map.png')
 
@@ -44,6 +45,11 @@ class GNSSImage(Node):
         self.heading = 0
         self.gps_sub= self.create_subscription(NavSatFix, '/navsatfix', self.gps_callback, 1)
         self.ins_sub= self.create_subscription(INSNavGeod, '/insnavgeod', self.ins_callback, 1)
+
+        self.create_subscription(Marker, '/visualization/waypoints', self.waypoints_callback, 10)
+        self.create_subscription(Marker, '/visualization/next_waypoint', self.next_waypoint_callback, 10)
+        self.waypoints = []
+        self.next_waypoint = None
 
         self.lat_start_bt = 40.092722  # 40.09269  
         self.lon_start_l  = -88.236365 # -88.23628
@@ -85,6 +91,12 @@ class GNSSImage(Node):
 
         return lon_xd, lat_yd  
 
+    def waypoints_callback(self, msg):
+        self.waypoints = msg.points
+
+    def next_waypoint_callback(self, msg):
+        self.next_waypoint = msg.pose.position
+
     def timer_callback(self):    
 
         lon_x = int(self.img_width*(self.lon-self.lon_start_l)/self.lon_scale)
@@ -97,6 +109,18 @@ class GNSSImage(Node):
            lat_y >= 0 and lat_y <= self.img_height and lat_yd >= 0 and lat_yd <= self.img_height):
             cv2.arrowedLine(pub_image, (lon_x, lat_y), (lon_xd, lat_yd), (0, 0, 255), 2)
             cv2.circle(pub_image, (lon_x, lat_y), 12, (0,0,255), 2)
+
+        # draw waypoints
+        for wp in self.waypoints:
+            lon_x = int(self.img_width * (wp.x - self.lon_start_l) / self.lon_scale)
+            lat_y = int(self.img_height - self.img_height * (wp.y - self.lat_start_bt) / self.lat_scale)
+            cv2.circle(pub_image, (lon_x, lat_y), 3, (255, 255, 255), -1)
+
+        # draw next waypoint
+        if self.next_waypoint:
+            lon_x = int(self.img_width * (self.next_waypoint.x - self.lon_start_l) / self.lon_scale)
+            lat_y = int(self.img_height - self.img_height * (self.next_waypoint.y - self.lat_start_bt) / self.lat_scale)
+            cv2.circle(pub_image, (lon_x, lat_y), 8, (0, 255, 0), -1)
 
         try:
             # Convert OpenCV image to ROS image and publish

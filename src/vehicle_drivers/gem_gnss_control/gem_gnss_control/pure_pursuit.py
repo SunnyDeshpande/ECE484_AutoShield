@@ -23,6 +23,8 @@ from std_msgs.msg import Bool
 from pacmod2_msgs.msg import PositionWithSpeed, VehicleSpeedRpt, GlobalCmd, SystemCmdFloat, SystemCmdInt
 from sensor_msgs.msg import NavSatFix
 from septentrio_gnss_driver.msg import INSNavGeod
+from visualization_msgs.msg import Marker
+from geometry_msgs.msg import Point
 
 # Initialize pygame for joystick
 pygame.init()
@@ -143,6 +145,8 @@ class PurePursuit(Node):
         self.accel_pub = self.create_publisher(SystemCmdFloat, '/pacmod/accel_cmd', 10)
         self.turn_pub = self.create_publisher(SystemCmdInt, '/pacmod/turn_cmd', 10)
         self.steer_pub = self.create_publisher(PositionWithSpeed, '/pacmod/steering_cmd', 10)
+        self.waypoints_pub = self.create_publisher(Marker, '/visualization/waypoints', 10)
+        self.next_waypoint_pub = self.create_publisher(Marker, '/visualization/next_waypoint', 10)
 
         # Commands
         self.global_cmd = GlobalCmd(enable=False, clear_override = True)
@@ -231,6 +235,49 @@ class PurePursuit(Node):
         y = local_y - self.offset * math.sin(yaw)
         return x, y, yaw
 
+    def publish_visualization_markers(self, target_x, target_y):
+        waypoints_marker = Marker()
+        waypoints_marker.header.frame_id = "base_link"
+        waypoints_marker.header.stamp = self.get_clock().now().to_msg()
+        waypoints_marker.ns = "waypoints"
+        waypoints_marker.id = 0
+        waypoints_marker.type = Marker.POINTS
+        waypoints_marker.action = Marker.ADD
+        waypoints_marker.scale.x = 0.2
+        waypoints_marker.scale.y = 0.2
+        waypoints_marker.color.r = 1.0
+        waypoints_marker.color.g = 1.0
+        waypoints_marker.color.b = 1.0
+        waypoints_marker.color.a = 1.0
+
+        for x, y in zip(self.path_points_x, self.path_points_y):
+            p = Point()
+            p.x = x
+            p.y = y
+            waypoints_marker.points.append(p)
+
+        self.waypoints_pub.publish(waypoints_marker)
+
+        next_waypoint_marker = Marker()
+        next_waypoint_marker.header.frame_id = "base_link"
+        next_waypoint_marker.header.stamp = self.get_clock().now().to_msg()
+        next_waypoint_marker.ns = "next_waypoint"
+        next_waypoint_marker.id = 1
+        next_waypoint_marker.type = Marker.SPHERE
+        next_waypoint_marker.action = Marker.ADD
+        next_waypoint_marker.pose.position.x = target_x
+        next_waypoint_marker.pose.position.y = target_y
+        next_waypoint_marker.pose.position.z = 0.0
+        next_waypoint_marker.scale.x = 0.5
+        next_waypoint_marker.scale.y = 0.5
+        next_waypoint_marker.scale.z = 0.5
+        next_waypoint_marker.color.r = 0.0
+        next_waypoint_marker.color.g = 1.0
+        next_waypoint_marker.color.b = 0.0
+        next_waypoint_marker.color.a = 1.0
+
+        self.next_waypoint_pub.publish(next_waypoint_marker)
+
     def control_loop(self):
         joy_enable = self.check_joystick_enable()
 
@@ -283,6 +330,9 @@ class PurePursuit(Node):
 
             target_x = self.path_points_x[self.goal]
             target_y = self.path_points_y[self.goal]
+
+            self.get_logger().info(f"Goal index: {self.goal}, Target Position: ({target_x}, {target_y}), current Position: ({curr_x}, {curr_y}), Look-ahead distance: {ld}")
+
             target_yaw = self.path_points_heading[self.goal]
             alpha = math.atan2(target_y - curr_y, target_x - curr_x) - curr_yaw
             curvature = 0.0 if self.speed < 0.2 else 2.0 * math.sin(alpha) / ld
@@ -308,7 +358,9 @@ class PurePursuit(Node):
             self.global_cmd.enable = True
             self.global_pub.publish(self.global_cmd)
 
+            self.publish_visualization_markers(target_x, target_y)
             self.get_logger().info(f"Pos: ({curr_x:.2f}, {curr_y:.2f}), Target: ({target_x:.2f}, {target_y:.2f}), Speed: {self.speed:.2f}, Throttle: {throttle_cmd:.2f}, Steering: {steering_wheel_angle:.2f}")
+            
 
 def main(args=None):
     rclpy.init(args=args)

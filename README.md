@@ -1,8 +1,6 @@
 # ECE484_AutoShield
 GEM Project by Team AutoShield for UIUC Fall '25 ECE484 Principles of Safe Autonomy
 
-
-
 # Procedure 
 #smart_extract.sh before build
 password:
@@ -31,3 +29,4 @@ ros2 launch basic_launch dbw_joystick.launch.py
 source install/setup.bash
 ros2 launch pacmod2 pacmod2.launch.xml
 ros2 run gem_gnss_control pure_pursuit
+

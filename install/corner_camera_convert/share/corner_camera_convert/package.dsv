@@ -1,0 +1,6 @@
+source;share/corner_camera_convert/hook/pythonpath.ps1
+source;share/corner_camera_convert/hook/pythonpath.dsv
+source;share/corner_camera_convert/hook/pythonpath.sh
+source;share/corner_camera_convert/hook/ament_prefix_path.ps1
+source;share/corner_camera_convert/hook/ament_prefix_path.dsv
+source;share/corner_camera_convert/hook/ament_prefix_path.sh

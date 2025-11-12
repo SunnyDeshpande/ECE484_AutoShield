@@ -1,0 +1,6 @@
+source;share/gem_rviz_display/hook/pythonpath.ps1
+source;share/gem_rviz_display/hook/pythonpath.dsv
+source;share/gem_rviz_display/hook/pythonpath.sh
+source;share/gem_rviz_display/hook/ament_prefix_path.ps1
+source;share/gem_rviz_display/hook/ament_prefix_path.dsv
+source;share/gem_rviz_display/hook/ament_prefix_path.sh

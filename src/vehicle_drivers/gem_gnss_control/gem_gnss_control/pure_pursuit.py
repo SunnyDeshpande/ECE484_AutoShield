@@ -1,12 +1,3 @@
-    #!/usr/bin/env python3
-
-#================================================================
-# File name: pure_pursuit_ros2.py
-# Description: GNSS waypoints tracker using PID and pure pursuit in ROS2
-# Author: Jiaming Zhang, Hang Cui
-# Date: 2025-06-03
-#================================================================
-
 import os
 import csv
 import math
@@ -65,7 +56,7 @@ class PID:
 
         return self.kp * e + self.ki * self.iterm + self.kd * de
 
-
+#why is the filter needed?
 class OnlineFilter:
     def __init__(self, cutoff, fs, order):
         nyq = 0.5 * fs
@@ -229,6 +220,7 @@ class PurePursuit(Node):
         yaw = self.heading_to_yaw(self.heading)
         x = local_x - self.offset * math.cos(yaw)
         y = local_y - self.offset * math.sin(yaw)
+        self.get_logger().debug(f'self.lon: {self.lon}, self.lat: {self.lat}, local_x: {local_x}, local_y: {local_y}, x: {x}, y: {y}, heading: {self.heading}, yaw: {yaw}')
         return x, y, yaw
 
     def control_loop(self):
@@ -252,7 +244,7 @@ class PurePursuit(Node):
             self.turn_cmd.command = 3
             self.turn_pub.publish(self.turn_cmd)
             
-            self.get_logger().warn('Pacmod Disabled: Vehicle enabled and forward gear engaged')
+            self.get_logger().error('Pacmod Disabled: Vehicle enabled and forward gear engaged')
 
         elif joy_enable == 0 and self.pacmod_enable:
             # joystick disable when vehicle enbaled
@@ -261,8 +253,7 @@ class PurePursuit(Node):
 
             self.turn_cmd.command = 1
             self.turn_pub.publish(self.turn_cmd)
-
-            self.get_logger().warn('Joystick Disabled: Vehicle disabled')
+            self.get_logger().error('Joystick Disabled: Vehicle disabled')
 
         elif joy_enable != 0 and self.pacmod_enable:
             # exceuate controller
@@ -271,10 +262,19 @@ class PurePursuit(Node):
 
             curr_x, curr_y, curr_yaw = self.get_gem_state()
             
+            min_dist = float('inf')
+            self.goal = 0
             for i in range(self.wp_size):
                 self.dist_arr[i] = self.dist((self.path_points_x[i], self.path_points_y[i]), (curr_x, curr_y))
+                dx = self.path_points_x[i] - curr_x
+                dy = self.path_points_y[i] - curr_y
+                angle_to_wp = math.atan2(dy, dx)
+                angle_diff = abs(angle_to_wp - curr_yaw)
+                
+                if angle_diff < math.pi/2 and self.dist_arr[i] < min_dist:
+                    min_dist = self.dist_arr[i]
+                    self.goal = i
 
-            self.goal = np.argmin(self.dist_arr)
             ld = self.look_ahead + max(0.0, self.speed - 2.5) * 2
             for i in range(self.goal, self.wp_size):
                 if self.dist_arr[i] > ld:

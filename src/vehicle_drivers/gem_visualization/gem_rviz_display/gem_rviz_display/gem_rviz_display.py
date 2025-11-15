@@ -22,6 +22,9 @@ class GEMRvizMarker(Node):
         self.create_subscription(VehicleSpeedRpt, '/pacmod/vehicle_speed_rpt', self.speed_callback, 10)
         self.create_subscription(SystemRptFloat, '/pacmod/steering_rpt', self.steer_callback, 10)
 
+        self.create_subscription(Marker, '/visualization/waypoints', self.waypoints_callback, 10)
+        self.create_subscription(Marker, '/visualization/next_waypoint', self.next_waypoint_callback, 10)
+
         # Data holders
         self.lat = 0.0
         self.lon = 0.0
@@ -50,6 +53,16 @@ class GEMRvizMarker(Node):
 
     def steer_callback(self, msg):
         self.steer = round(np.degrees(msg.output), 1)
+
+    def waypoints_callback(self, msg: Marker):
+        msg.header.stamp = self.get_clock().now().to_msg()
+        msg.header.frame_id = "base_link"
+        self.publisher.publish(msg)
+
+    def next_waypoint_callback(self, msg: Marker):
+        msg.header.stamp = self.get_clock().now().to_msg()
+        msg.header.frame_id = "base_link"
+        self.publisher.publish(msg)
 
     def publish_text_marker(self):
         marker = Marker()

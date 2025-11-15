@@ -109,18 +109,23 @@ class GNSSImage(Node):
            lat_y >= 0 and lat_y <= self.img_height and lat_yd >= 0 and lat_yd <= self.img_height):
             cv2.arrowedLine(pub_image, (lon_x, lat_y), (lon_xd, lat_yd), (0, 0, 255), 2)
             cv2.circle(pub_image, (lon_x, lat_y), 12, (0,0,255), 2)
+        self.get_logger().info(f"GNSS Image: lat: {self.lat}, lon: {self.lon}, heading: {self.heading}")
 
         # draw waypoints
         for wp in self.waypoints:
             lon_x = int(self.img_width * (wp.x - self.lon_start_l) / self.lon_scale)
             lat_y = int(self.img_height - self.img_height * (wp.y - self.lat_start_bt) / self.lat_scale)
             cv2.circle(pub_image, (lon_x, lat_y), 3, (255, 255, 255), -1)
+            # log for first 3 lon_x, lat_y of waypoints
+            if wp == self.waypoints[0] or wp == self.waypoints[1] or wp == self.waypoints[2]:
+                self.get_logger().info(f"Waypoint: lon_x: {lon_x}, lat_y: {lat_y}")
 
         # draw next waypoint
         if self.next_waypoint:
             lon_x = int(self.img_width * (self.next_waypoint.x - self.lon_start_l) / self.lon_scale)
             lat_y = int(self.img_height - self.img_height * (self.next_waypoint.y - self.lat_start_bt) / self.lat_scale)
             cv2.circle(pub_image, (lon_x, lat_y), 8, (0, 255, 0), -1)
+            self.get_logger().info(f"Next Waypoint: lon_x: {lon_x}, lat_y: {lat_y}")
 
         try:
             # Convert OpenCV image to ROS image and publish

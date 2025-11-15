@@ -243,8 +243,8 @@ class PurePursuit(Node):
         waypoints_marker.id = 0
         waypoints_marker.type = Marker.POINTS
         waypoints_marker.action = Marker.ADD
-        waypoints_marker.scale.x = 0.2
-        waypoints_marker.scale.y = 0.2
+        waypoints_marker.scale.x = 2.0
+        waypoints_marker.scale.y = 2.0
         waypoints_marker.color.r = 1.0
         waypoints_marker.color.g = 1.0
         waypoints_marker.color.b = 1.0
@@ -268,9 +268,9 @@ class PurePursuit(Node):
         next_waypoint_marker.pose.position.x = target_x
         next_waypoint_marker.pose.position.y = target_y
         next_waypoint_marker.pose.position.z = 0.0
-        next_waypoint_marker.scale.x = 0.5
-        next_waypoint_marker.scale.y = 0.5
-        next_waypoint_marker.scale.z = 0.5
+        next_waypoint_marker.scale.x = 2.0
+        next_waypoint_marker.scale.y = 2.0
+        next_waypoint_marker.scale.z = 2.0
         next_waypoint_marker.color.r = 0.0
         next_waypoint_marker.color.g = 1.0
         next_waypoint_marker.color.b = 0.0

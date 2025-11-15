@@ -1,0 +1,43 @@
+version: 2.1
+
+commands:
+  ros_build:
+    steps:
+      - checkout
+      - run:
+          name: Set Up Container
+          command: |
+            mkdir $CIRCLE_PROJECT_REPONAME
+            mv `find -maxdepth 1 -not -name . -not -name $CIRCLE_PROJECT_REPONAME` $CIRCLE_PROJECT_REPONAME/
+      - run:
+          name: Install Dependencies
+          command: |
+            source /opt/ros/*/setup.bash
+            apt update
+            rosdep update
+            rosdep install --from-paths . --ignore-src -y
+      - run:
+          name: Build
+          command: |
+            source /opt/ros/*/setup.bash
+            cd ..
+            colcon build
+      - run:
+          name: Run Tests
+          command: |
+            source /opt/ros/*/setup.bash
+            cd ..
+            colcon test --packages-select $CIRCLE_PROJECT_REPONAME
+            colcon test-result --verbose
+jobs:
+  foxy:
+    docker:
+      - image: autonomoustuff/docker-builds:foxy-ros-base
+    steps:
+      - ros_build
+    working_directory: ~/src
+
+workflows:
+  ros_build:
+    jobs:
+      - foxy

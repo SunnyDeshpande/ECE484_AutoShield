@@ -1,0 +1,12 @@
+__pycache__
+resources/ArenaSDK/linux64/ArenaSDK_Linux_x64
+ve_dev
+ve_dev_debug
+log
+build
+install
+dist
+.ropeproject
+*.egg-info
+*.tar.gz
+*.whl

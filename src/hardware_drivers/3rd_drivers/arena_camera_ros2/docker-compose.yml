@@ -1,0 +1,14 @@
+version: "3.2"
+services:
+  development:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/arena_camera_ros2
+
+    network_mode: host
+    command:
+      ["bash"]
+    # lucid devices container can see
+      #  ["/ArenaSDK_Linux_x64/precompiledExamples/./IpConfigUtility", "/list"]

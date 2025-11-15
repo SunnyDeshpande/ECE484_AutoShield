@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>pacmod2_game_control</name>
+  <version>2005.1.0</version>
+  <description>ROS Package for controlling the AStuff PACMod with a gamepad</description>
+  <license>MIT</license>
+
+  <url type="website">https://github.com/astuff/pacmod_game_control</url>
+  <url type="repository">https://github.com/astuff/pacmod_game_control</url>
+  <url type="bugtracker">https://github.com/astuff/pacmod_game_control/issues</url>
+
+  <maintainer email="software@autonomoustuff.com">AutonomouStuff Software Development Team</maintainer>
+  <author email="jdriscoll@autonomoustuff.com">Joe Driscoll</author>
+  <author email="ian.colwell@hexagon.com">Ian Colwell</author>
+
+  <buildtool_depend>ament_cmake_auto</buildtool_depend>
+
+  <depend>rclcpp</depend>
+  <depend>rclcpp_components</depend>
+  <depend>rclcpp_lifecycle</depend>
+
+  <depend>std_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>pacmod2_msgs</depend>
+
+  <exec_depend>joy</exec_depend>
+
+  <export><build_type>ament_cmake</build_type></export>
+</package>
